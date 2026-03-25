@@ -1,217 +1,136 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mestrado - Resultados</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 1000px;
-      margin: 40px auto;
-      padding: 20px;
-      background: #f4f4f4;
-      color: #222;
-    }
+<meta charset="UTF-8">
+<title>Mestrado - Resultados</title>
 
-    .box {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
+<style>
+body {
+    font-family: Arial;
+    max-width: 900px;
+    margin: 40px auto;
+    background: #f4f4f4;
+}
 
-    h1, h2 {
-      margin-top: 0;
-    }
+.box {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
 
-    img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 8px;
-    }
+/* Avatar */
+#avatar {
+    width: 120px;
+    display: block;
+    margin: 10px auto;
+    transition: transform 0.2s;
+}
 
-    .chat-area {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 15px;
-    }
+/* Animação falando */
+.falando {
+    animation: falar 0.3s infinite;
+}
 
-    input[type="text"] {
-      flex: 1;
-      min-width: 250px;
-      padding: 12px;
-      font-size: 16px;
-    }
+@keyframes falar {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+}
 
-    button {
-      padding: 12px 16px;
-      font-size: 16px;
-      cursor: pointer;
-      border: none;
-      border-radius: 8px;
-      background: #222;
-      color: white;
-    }
+input {
+    width: 70%;
+    padding: 10px;
+}
 
-    button:hover {
-      background: #444;
-    }
+button {
+    padding: 10px;
+    cursor: pointer;
+}
 
-    #resposta {
-      margin-top: 20px;
-      padding: 15px;
-      background: #f0f0f0;
-      border-radius: 8px;
-      min-height: 60px;
-      white-space: pre-line;
-    }
+#resposta {
+    margin-top: 15px;
+    padding: 10px;
+    background: #eee;
+    border-radius: 8px;
+}
 
-    .aviso {
-      color: #666;
-      font-size: 14px;
-      margin-top: 10px;
-    }
-  </style>
+img {
+    max-width: 100%;
+}
+</style>
 </head>
+
 <body>
 
-  <div class="box">
-    <h1>Resultados do Mestrado</h1>
-    <p>
-      Página de apresentação dos resultados da simulação e análise do artigo.
-    </p>
-  </div>
+<div class="box">
+<h1>Resultados do Mestrado</h1>
+<p>Análise de simulação e melhorias do artigo.</p>
+</div>
 
-  <div class="box">
-    <h2>Gráfico Principal</h2>
-    <img src="melhoria1_graficos_IC.png" alt="Gráfico principal">
-  </div>
+<div class="box">
+<h2>Gráfico</h2>
+<img src="melhoria1_graficos_IC.png">
+</div>
 
-  <div class="box">
-    <h2>Assistente Virtual do Projeto</h2>
-    <p>Você pode digitar ou falar sua pergunta.</p>
+<div class="box">
+<h2>Assistente Virtual</h2>
 
-    <div class="chat-area">
-      <input type="text" id="pergunta" placeholder="Digite sua pergunta aqui">
-      <button onclick="responderPergunta()">Enviar</button>
-      <button onclick="iniciarMicrofone()">🎤 Falar</button>
-    </div>
+<img id="avatar" src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png">
 
-    <div id="resposta">A resposta do assistente aparecerá aqui.</div>
-    <div class="aviso">
-      Dica: use o navegador Chrome para melhor funcionamento do microfone.
-    </div>
-  </div>
+<input type="text" id="pergunta" placeholder="Digite sua pergunta">
+<button onclick="responder()">Enviar</button>
 
-  <script>
-    function falarTexto(texto) {
-      const sintese = window.speechSynthesis;
-      const fala = new SpeechSynthesisUtterance(texto);
-      fala.lang = "pt-BR";
-      fala.rate = 1.0;
-      fala.pitch = 1.0;
-      sintese.cancel();
-      sintese.speak(fala);
+<div id="resposta">Faça uma pergunta...</div>
+
+</div>
+
+<script>
+
+function falar(texto) {
+    const avatar = document.getElementById("avatar");
+
+    const msg = new SpeechSynthesisUtterance(texto);
+    msg.lang = "pt-BR";
+
+    // Ativa animação
+    avatar.classList.add("falando");
+
+    msg.onend = function() {
+        avatar.classList.remove("falando");
+    };
+
+    speechSynthesis.speak(msg);
+}
+
+function responder() {
+    let p = document.getElementById("pergunta").value.toLowerCase();
+    let r = "";
+
+    if (p.includes("objetivo")) {
+        r = "O objetivo do trabalho é analisar resultados de simulação com melhorias estatísticas.";
+    }
+    else if (p.includes("melhoria 1")) {
+        r = "A melhoria 1 mostra gráficos com intervalo de confiança de 95 por cento.";
+    }
+    else if (p.includes("melhoria 2")) {
+        r = "A melhoria 2 apresenta um modelo analítico do atraso.";
+    }
+    else if (p.includes("melhoria 3")) {
+        r = "A melhoria 3 apresenta análise estatística completa.";
+    }
+    else if (p.includes("melhoria 4")) {
+        r = "A melhoria 4 utiliza k-means para análise NILM.";
+    }
+    else {
+        r = "Pergunta não reconhecida. Tente falar sobre objetivo ou melhorias.";
     }
 
-    function gerarResposta(texto) {
-      const pergunta = texto.toLowerCase();
+    document.getElementById("resposta").innerText = r;
+    falar(r);
+}
 
-      if (pergunta.includes("objetivo") || pergunta.includes("trabalho")) {
-        return "O objetivo do trabalho é apresentar e analisar resultados de simulação relacionados ao artigo, destacando melhorias gráficas, modelo analítico, análise estatística e processamento NILM.";
-      }
-
-      if (pergunta.includes("melhoria 1")) {
-        return "A melhoria 1 apresenta gráficos com intervalo de confiança de 95 por cento, tornando a visualização mais robusta e mais adequada para análise científica.";
-      }
-
-      if (pergunta.includes("melhoria 2")) {
-        return "A melhoria 2 apresenta um modelo analítico do atraso em função do número de medidores e do fator de agregação.";
-      }
-
-      if (pergunta.includes("melhoria 3")) {
-        return "A melhoria 3 traz a análise estatística completa, incluindo medidas como desvio padrão, intervalo de confiança e testes comparativos.";
-      }
-
-      if (pergunta.includes("melhoria 4") || pergunta.includes("nilm")) {
-        return "A melhoria 4 apresenta um pipeline NILM com k-means aprimorado e métricas de qualidade para análise dos dados.";
-      }
-
-      if (pergunta.includes("gráfico") || pergunta.includes("grafico")) {
-        return "O gráfico principal mostrado na página apresenta os resultados visuais da simulação e pode ser expandido com outras figuras do projeto.";
-      }
-
-      if (pergunta.includes("intervalo de confiança") || pergunta.includes("ic")) {
-        return "O intervalo de confiança de 95 por cento foi incluído para fornecer maior rigor estatístico à apresentação dos resultados.";
-      }
-
-      if (pergunta.includes("modelo analítico") || pergunta.includes("modelo analitico")) {
-        return "O modelo analítico descreve o comportamento do atraso em função das variáveis do sistema, permitindo interpretação quantitativa dos resultados.";
-      }
-
-      if (pergunta.includes("k-means") || pergunta.includes("cluster")) {
-        return "O k-means foi utilizado para agrupar padrões nos dados, permitindo uma análise mais estruturada no contexto do NILM.";
-      }
-
-      if (pergunta.includes("autor") || pergunta.includes("quem fez")) {
-        return "Este material foi organizado por Eduardo Glicério no contexto do seu projeto de mestrado.";
-      }
-
-      return "Desculpe, ainda não tenho uma resposta pronta para essa pergunta. Tente perguntar sobre objetivo, melhoria 1, melhoria 2, melhoria 3, melhoria 4, gráfico, modelo analítico ou NILM.";
-    }
-
-    function responderPergunta() {
-      const campo = document.getElementById("pergunta");
-      const texto = campo.value.trim();
-
-      if (texto === "") {
-        document.getElementById("resposta").innerText = "Digite ou fale uma pergunta primeiro.";
-        return;
-      }
-
-      const resposta = gerarResposta(texto);
-      document.getElementById("resposta").innerText = resposta;
-      falarTexto(resposta);
-    }
-
-    function iniciarMicrofone() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-      if (!SpeechRecognition) {
-        document.getElementById("resposta").innerText =
-          "Seu navegador não suporta reconhecimento de voz. Tente usar o Google Chrome.";
-        return;
-      }
-
-      const recognition = new SpeechRecognition();
-      recognition.lang = "pt-BR";
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-
-      recognition.start();
-
-      document.getElementById("resposta").innerText = "Ouvindo... fale sua pergunta.";
-
-      recognition.onresult = function(event) {
-        const textoFalado = event.results[0][0].transcript;
-        document.getElementById("pergunta").value = textoFalado;
-
-        const resposta = gerarResposta(textoFalado);
-        document.getElementById("resposta").innerText =
-          "Pergunta reconhecida: " + textoFalado + "\n\nResposta: " + resposta;
-
-        falarTexto(resposta);
-      };
-
-      recognition.onerror = function(event) {
-        document.getElementById("resposta").innerText =
-          "Erro no reconhecimento de voz: " + event.error;
-      };
-    }
-  </script>
+</script>
 
 </body>
 </html>
