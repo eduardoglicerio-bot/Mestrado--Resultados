@@ -72,17 +72,44 @@
       white-space: pre-line;
     }
 
-    #avatar {
-      width: 140px;
-      display: block;
-      margin: 15px auto;
-    }
-
     .aviso {
       color: #666;
       font-size: 14px;
       margin-top: 10px;
       text-align: center;
+    }
+
+    .avatar-wrap {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0 10px;
+    }
+
+    #robot-svg {
+      width: 180px;
+      height: auto;
+      display: block;
+    }
+
+    /* boca parada */
+    #mouth {
+      transform-box: fill-box;
+      transform-origin: center;
+      transition: transform 0.1s ease;
+    }
+
+    /* boca falando */
+    .speaking #mouth {
+      animation: mouthTalk 0.18s infinite alternate;
+    }
+
+    @keyframes mouthTalk {
+      0% {
+        transform: scaleY(0.35);
+      }
+      100% {
+        transform: scaleY(1.25);
+      }
     }
   </style>
 </head>
@@ -102,9 +129,50 @@
 
   <div class="box">
     <h2>Assistente Virtual do Projeto</h2>
-    <p>Você pode digitar sua pergunta e ouvir a resposta em áudio.</p>
+    <p>Digite sua pergunta e ouça a resposta em áudio.</p>
 
-    <img id="avatar" src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" alt="Avatar do assistente">
+    <div class="avatar-wrap">
+      <svg id="robot-svg" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" aria-label="Avatar robô">
+        <!-- antena -->
+        <line x1="110" y1="20" x2="110" y2="45" stroke="#444" stroke-width="5"/>
+        <circle cx="110" cy="14" r="8" fill="#ff5252"/>
+
+        <!-- cabeça -->
+        <rect x="45" y="45" width="130" height="105" rx="18" fill="#d9e3ea" stroke="#444" stroke-width="5"/>
+
+        <!-- orelhas -->
+        <rect x="28" y="78" width="17" height="35" rx="6" fill="#b8c7d1" stroke="#444" stroke-width="4"/>
+        <rect x="175" y="78" width="17" height="35" rx="6" fill="#b8c7d1" stroke="#444" stroke-width="4"/>
+
+        <!-- olhos -->
+        <circle cx="82" cy="88" r="16" fill="#222"/>
+        <circle cx="138" cy="88" r="16" fill="#222"/>
+        <circle cx="86" cy="83" r="4" fill="#9be7ff"/>
+        <circle cx="142" cy="83" r="4" fill="#9be7ff"/>
+
+        <!-- sobrancelhas -->
+        <line x1="66" y1="63" x2="98" y2="63" stroke="#444" stroke-width="5" stroke-linecap="round"/>
+        <line x1="122" y1="63" x2="154" y2="63" stroke="#444" stroke-width="5" stroke-linecap="round"/>
+
+        <!-- boca -->
+        <rect id="mouth" x="85" y="118" width="50" height="14" rx="7" fill="#111"/>
+
+        <!-- corpo -->
+        <rect x="72" y="157" width="76" height="34" rx="10" fill="#c9d6df" stroke="#444" stroke-width="5"/>
+
+        <!-- pescoço -->
+        <line x1="95" y1="150" x2="95" y2="157" stroke="#444" stroke-width="5"/>
+        <line x1="125" y1="150" x2="125" y2="157" stroke="#444" stroke-width="5"/>
+
+        <!-- braços -->
+        <line x1="72" y1="170" x2="38" y2="188" stroke="#444" stroke-width="5" stroke-linecap="round"/>
+        <line x1="148" y1="170" x2="182" y2="188" stroke="#444" stroke-width="5" stroke-linecap="round"/>
+
+        <!-- pernas -->
+        <line x1="94" y1="191" x2="84" y2="214" stroke="#444" stroke-width="5" stroke-linecap="round"/>
+        <line x1="126" y1="191" x2="136" y2="214" stroke="#444" stroke-width="5" stroke-linecap="round"/>
+      </svg>
+    </div>
 
     <div class="chat-area">
       <input type="text" id="pergunta" placeholder="Digite sua pergunta aqui">
@@ -119,33 +187,29 @@
   </div>
 
   <script>
+    function iniciarAnimacaoBoca() {
+      document.getElementById("robot-svg").classList.add("speaking");
+    }
+
+    function pararAnimacaoBoca() {
+      document.getElementById("robot-svg").classList.remove("speaking");
+    }
+
     function falarTexto(texto) {
-      const avatar = document.getElementById("avatar");
-
-      const imgNormal = "https://cdn-icons-png.flaticon.com/512/4712/4712027.png";
-      const imgFalando = "https://cdn-icons-png.flaticon.com/512/4712/4712109.png";
-
       const msg = new SpeechSynthesisUtterance(texto);
       msg.lang = "pt-BR";
       msg.rate = 1.0;
       msg.pitch = 1.0;
 
       speechSynthesis.cancel();
-
-      let alternar = true;
-      const intervalo = setInterval(() => {
-        avatar.src = alternar ? imgFalando : imgNormal;
-        alternar = !alternar;
-      }, 180);
+      iniciarAnimacaoBoca();
 
       msg.onend = function() {
-        clearInterval(intervalo);
-        avatar.src = imgNormal;
+        pararAnimacaoBoca();
       };
 
       msg.onerror = function() {
-        clearInterval(intervalo);
-        avatar.src = imgNormal;
+        pararAnimacaoBoca();
       };
 
       speechSynthesis.speak(msg);
