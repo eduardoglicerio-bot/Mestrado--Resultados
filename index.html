@@ -1,304 +1,672 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mestrado - Resultados</title>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chatbot com Voz e Avatar</title>
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      max-width: 1000px;
-      margin: 40px auto;
-      padding: 20px;
-      background: #f4f4f4;
-      color: #222;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #0f172a, #111827 55%, #0b1120);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
     }
 
-    .box {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    .app {
+      width: 100%;
+      max-width: 980px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 24px;
+      padding: 28px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
     }
 
-    h1, h2 {
-      margin-top: 0;
-      text-align: center;
+    .left, .right {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
-    p {
-      text-align: center;
+    .title {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      font-weight: 700;
     }
 
-    .grafico {
-      max-width: 80%;
-      display: block;
-      margin: 0 auto;
-      border-radius: 8px;
+    .subtitle {
+      color: #cbd5e1;
+      line-height: 1.5;
+      margin-bottom: 22px;
     }
 
-    .chat-area {
+    .status {
+      min-height: 24px;
+      font-size: 0.95rem;
+      color: #93c5fd;
+      margin-bottom: 18px;
+    }
+
+    .controls {
+      display: grid;
+      gap: 12px;
+    }
+
+    .input-row {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
-      margin-top: 15px;
-      justify-content: center;
     }
 
     input[type="text"] {
       flex: 1;
-      min-width: 250px;
-      max-width: 500px;
-      padding: 12px;
-      font-size: 16px;
-      border: 1px solid #bbb;
-      border-radius: 8px;
+      min-width: 240px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      outline: none;
+      font-size: 1rem;
+    }
+
+    input[type="text"]::placeholder {
+      color: #cbd5e1;
     }
 
     button {
-      padding: 12px 16px;
-      font-size: 16px;
-      cursor: pointer;
       border: none;
-      border-radius: 8px;
-      background: #222;
-      color: white;
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
     }
 
     button:hover {
-      background: #444;
+      transform: translateY(-1px);
+      opacity: 0.95;
     }
 
-    .aviso {
-      color: #666;
-      font-size: 14px;
-      margin-top: 14px;
-      text-align: center;
+    button:active {
+      transform: translateY(0);
     }
 
-    .avatar-wrap {
+    .btn-primary {
+      background: #22c55e;
+      color: #08110d;
+    }
+
+    .btn-secondary {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-row {
       display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .hint {
+      margin-top: 14px;
+      color: #cbd5e1;
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .robot-wrap {
+      display: flex;
+      align-items: center;
       justify-content: center;
-      margin: 20px 0 10px;
+      min-height: 420px;
     }
 
-    #robot-svg {
-      width: 180px;
-      height: auto;
-      display: block;
-    }
-
-    /* boca parada */
-    #mouth {
-      transform-box: fill-box;
+    .robot {
+      position: relative;
+      width: 240px;
+      height: 340px;
+      animation: floatBot 3.5s ease-in-out infinite;
       transform-origin: center;
-      transition: transform 0.08s ease;
     }
 
-    /* boca falando */
-    .speaking #mouth {
-      animation: mouthTalk 0.16s infinite alternate;
+    @keyframes floatBot {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
     }
 
-    @keyframes mouthTalk {
+    .antenna {
+      position: absolute;
+      top: 4px;
+      left: 50%;
+      width: 8px;
+      height: 48px;
+      background: #94a3b8;
+      transform: translateX(-50%);
+      border-radius: 8px;
+    }
+
+    .light {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      width: 24px;
+      height: 24px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: #34d399;
+      box-shadow: 0 0 12px #34d399, 0 0 24px #34d399;
+      opacity: 0.55;
+      transition: opacity 0.12s linear, transform 0.12s linear;
+    }
+
+    .head {
+      position: absolute;
+      top: 42px;
+      left: 50%;
+      width: 200px;
+      height: 160px;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, #dbeafe, #93c5fd);
+      border: 6px solid #1e293b;
+      border-radius: 28px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+
+    .eye {
+      position: absolute;
+      top: 56px;
+      width: 30px;
+      height: 30px;
+      background: #0f172a;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+
+    .eye::after {
+      content: "";
+      position: absolute;
+      top: 6px;
+      left: 8px;
+      width: 10px;
+      height: 10px;
+      background: #fff;
+      border-radius: 50%;
+      opacity: 0.9;
+    }
+
+    .eye.left-eye { left: 42px; }
+    .eye.right-eye { right: 42px; }
+
+    .eyelid {
+      position: absolute;
+      inset: 0;
+      background: #93c5fd;
+      transform: translateY(-110%);
+    }
+
+    .robot.blink .eyelid {
+      animation: blinkOnce 0.22s ease-in-out;
+    }
+
+    @keyframes blinkOnce {
+      0% { transform: translateY(-110%); }
+      50% { transform: translateY(0%); }
+      100% { transform: translateY(-110%); }
+    }
+
+    .mouth {
+      position: absolute;
+      left: 50%;
+      bottom: 28px;
+      width: 64px;
+      height: 14px;
+      transform: translateX(-50%);
+      background: #0f172a;
+      border-radius: 20px;
+      transition: height 0.08s linear, width 0.08s linear, bottom 0.08s linear;
+    }
+
+    .robot.talking .mouth {
+      animation: talk 0.18s infinite alternate;
+    }
+
+    @keyframes talk {
       0% {
-        transform: scaleY(0.35);
+        height: 12px;
+        width: 64px;
+        bottom: 28px;
       }
       100% {
-        transform: scaleY(1.3);
+        height: 34px;
+        width: 54px;
+        bottom: 18px;
       }
     }
 
-    /* olhos piscando de leve */
-    #eye-left, #eye-right {
-      transform-box: fill-box;
-      transform-origin: center;
-      animation: blink 5s infinite;
+    .neck {
+      position: absolute;
+      top: 202px;
+      left: 50%;
+      width: 36px;
+      height: 26px;
+      transform: translateX(-50%);
+      background: #94a3b8;
+      border: 4px solid #1e293b;
+      border-radius: 8px;
     }
 
-    @keyframes blink {
-      0%, 46%, 48%, 100% {
-        transform: scaleY(1);
-      }
-      47% {
-        transform: scaleY(0.1);
-      }
+    .body {
+      position: absolute;
+      top: 226px;
+      left: 50%;
+      width: 180px;
+      height: 100px;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, #bfdbfe, #60a5fa);
+      border: 6px solid #1e293b;
+      border-radius: 24px;
     }
 
-    /* resposta escondida */
-    #resposta {
-      display: none;
+    .panel {
+      position: absolute;
+      top: 24px;
+      left: 50%;
+      width: 76px;
+      height: 28px;
+      transform: translateX(-50%);
+      border-radius: 12px;
+      background: #0f172a;
+      box-shadow: inset 0 0 8px rgba(255,255,255,0.08);
+    }
+
+    .panel::after {
+      content: "";
+      position: absolute;
+      top: 7px;
+      left: 50%;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #22c55e;
+      transform: translateX(-50%);
+      box-shadow: 0 0 8px #22c55e;
+    }
+
+    .arm {
+      position: absolute;
+      top: 244px;
+      width: 22px;
+      height: 82px;
+      background: #94a3b8;
+      border: 4px solid #1e293b;
+      border-radius: 16px;
+    }
+
+    .arm.left-arm {
+      left: 12px;
+      transform: rotate(18deg);
+    }
+
+    .arm.right-arm {
+      right: 12px;
+      transform: rotate(-18deg);
+    }
+
+    .leg {
+      position: absolute;
+      bottom: 0;
+      width: 26px;
+      height: 76px;
+      background: #94a3b8;
+      border: 4px solid #1e293b;
+      border-radius: 16px;
+    }
+
+    .leg.left-leg {
+      left: 76px;
+    }
+
+    .leg.right-leg {
+      right: 76px;
+    }
+
+    @media (max-width: 860px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .robot-wrap {
+        min-height: 360px;
+        order: -1;
+      }
+
+      .title {
+        font-size: 1.7rem;
+      }
     }
   </style>
 </head>
 <body>
+  <main class="app">
+    <section class="left">
+      <h1 class="title">Chatbot com voz e avatar</h1>
+      <p class="subtitle">
+        Digite ou fale com o robô. Ele responde com voz, mexe a boca enquanto fala e a luz pisca durante o áudio.
+      </p>
 
-  <div class="box">
-    <h1>Resultados do Mestrado</h1>
-    <p>
-      Página de apresentação dos resultados da simulação e análise do artigo.
-    </p>
-  </div>
+      <div id="status" class="status">Pronto para conversar.</div>
 
-  <div class="box">
-    <h2>Gráfico Principal</h2>
-    <img class="grafico" src="melhoria1_graficos_IC.png" alt="Gráfico principal">
-  </div>
+      <div class="controls">
+        <div class="input-row">
+          <input id="userInput" type="text" placeholder="Digite sua pergunta aqui..." />
+          <button id="sendBtn" class="btn-primary">Enviar</button>
+        </div>
 
-  <div class="box">
-    <h2>Assistente Virtual do Projeto</h2>
-    <p>Pergunte ao assistente sobre o trabalho e ouça a resposta em áudio.</p>
+        <div class="btn-row">
+          <button id="micBtn" class="btn-secondary">🎤 Falar</button>
+          <button id="stopBtn" class="btn-danger">⏹ Parar voz</button>
+        </div>
+      </div>
 
-    <div class="avatar-wrap">
-      <svg id="robot-svg" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" aria-label="Avatar robô">
-        <!-- antena -->
-        <line x1="110" y1="20" x2="110" y2="45" stroke="#444" stroke-width="5"/>
-        <circle cx="110" cy="14" r="8" fill="#ff5252"/>
+      <p class="hint">
+        Observação: esta versão não mostra na tela a frase que o robô responde. Ele apenas fala. Ideal para usar no seu GitHub Pages sem complicação.
+      </p>
+    </section>
 
-        <!-- cabeça -->
-        <rect x="45" y="45" width="130" height="105" rx="18" fill="#d9e3ea" stroke="#444" stroke-width="5"/>
+    <section class="right">
+      <div class="robot-wrap">
+        <div id="robot" class="robot" aria-label="Robô falante">
+          <div class="antenna">
+            <div id="light" class="light"></div>
+          </div>
 
-        <!-- orelhas -->
-        <rect x="28" y="78" width="17" height="35" rx="6" fill="#b8c7d1" stroke="#444" stroke-width="4"/>
-        <rect x="175" y="78" width="17" height="35" rx="6" fill="#b8c7d1" stroke="#444" stroke-width="4"/>
+          <div class="head">
+            <div class="eye left-eye">
+              <div class="eyelid"></div>
+            </div>
+            <div class="eye right-eye">
+              <div class="eyelid"></div>
+            </div>
+            <div class="mouth"></div>
+          </div>
 
-        <!-- sobrancelhas -->
-        <line x1="66" y1="63" x2="98" y2="63" stroke="#444" stroke-width="5" stroke-linecap="round"/>
-        <line x1="122" y1="63" x2="154" y2="63" stroke="#444" stroke-width="5" stroke-linecap="round"/>
-
-        <!-- olhos -->
-        <g id="eye-left">
-          <circle cx="82" cy="88" r="16" fill="#222"/>
-          <circle cx="86" cy="83" r="4" fill="#9be7ff"/>
-        </g>
-
-        <g id="eye-right">
-          <circle cx="138" cy="88" r="16" fill="#222"/>
-          <circle cx="142" cy="83" r="4" fill="#9be7ff"/>
-        </g>
-
-        <!-- boca -->
-        <rect id="mouth" x="85" y="118" width="50" height="14" rx="7" fill="#111"/>
-
-        <!-- corpo -->
-        <rect x="72" y="157" width="76" height="34" rx="10" fill="#c9d6df" stroke="#444" stroke-width="5"/>
-
-        <!-- pescoço -->
-        <line x1="95" y1="150" x2="95" y2="157" stroke="#444" stroke-width="5"/>
-        <line x1="125" y1="150" x2="125" y2="157" stroke="#444" stroke-width="5"/>
-
-        <!-- braços -->
-        <line x1="72" y1="170" x2="38" y2="188" stroke="#444" stroke-width="5" stroke-linecap="round"/>
-        <line x1="148" y1="170" x2="182" y2="188" stroke="#444" stroke-width="5" stroke-linecap="round"/>
-
-        <!-- pernas -->
-        <line x1="94" y1="191" x2="84" y2="214" stroke="#444" stroke-width="5" stroke-linecap="round"/>
-        <line x1="126" y1="191" x2="136" y2="214" stroke="#444" stroke-width="5" stroke-linecap="round"/>
-      </svg>
-    </div>
-
-    <div class="chat-area">
-      <input type="text" id="pergunta" placeholder="Digite sua pergunta aqui">
-      <button onclick="responderPergunta()">Falar com o assistente</button>
-    </div>
-
-    <div id="resposta"></div>
-
-    <div class="aviso">
-      Exemplos: objetivo, melhoria 1, melhoria 2, melhoria 3, melhoria 4, gráfico, NILM, modelo analítico.
-    </div>
-  </div>
+          <div class="neck"></div>
+          <div class="body">
+            <div class="panel"></div>
+          </div>
+          <div class="arm left-arm"></div>
+          <div class="arm right-arm"></div>
+          <div class="leg left-leg"></div>
+          <div class="leg right-leg"></div>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <script>
-    function iniciarAnimacaoBoca() {
-      document.getElementById("robot-svg").classList.add("speaking");
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const micBtn = document.getElementById('micBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const statusEl = document.getElementById('status');
+    const robot = document.getElementById('robot');
+    const light = document.getElementById('light');
+
+    let recognition = null;
+    let speaking = false;
+    let lightInterval = null;
+    let blinkInterval = null;
+
+    function setStatus(text) {
+      statusEl.textContent = text;
     }
 
-    function pararAnimacaoBoca() {
-      document.getElementById("robot-svg").classList.remove("speaking");
+    function startTalkingAnimation() {
+      robot.classList.add('talking');
+      startLightPulse();
     }
 
-    function falarTexto(texto) {
-      const msg = new SpeechSynthesisUtterance(texto);
-      msg.lang = "pt-BR";
-      msg.rate = 1.0;
-      msg.pitch = 1.0;
-      msg.volume = 1.0;
-
-      speechSynthesis.cancel();
-      iniciarAnimacaoBoca();
-
-      msg.onend = function() {
-        pararAnimacaoBoca();
-      };
-
-      msg.onerror = function() {
-        pararAnimacaoBoca();
-      };
-
-      speechSynthesis.speak(msg);
+    function stopTalkingAnimation() {
+      robot.classList.remove('talking');
+      stopLightPulse();
     }
 
-    function gerarResposta(texto) {
-      const pergunta = texto.toLowerCase();
-
-      if (pergunta.includes("objetivo") || pergunta.includes("trabalho")) {
-        return "O objetivo do trabalho é apresentar e analisar resultados de simulação relacionados ao artigo, destacando melhorias gráficas, modelo analítico, análise estatística e processamento NILM.";
-      }
-
-      if (pergunta.includes("melhoria 1")) {
-        return "A melhoria 1 apresenta gráficos com intervalo de confiança de 95 por cento, tornando a visualização mais robusta e mais adequada para análise científica.";
-      }
-
-      if (pergunta.includes("melhoria 2")) {
-        return "A melhoria 2 apresenta um modelo analítico do atraso em função do número de medidores e do fator de agregação.";
-      }
-
-      if (pergunta.includes("melhoria 3")) {
-        return "A melhoria 3 traz a análise estatística completa, incluindo medidas como desvio padrão, intervalo de confiança e testes comparativos.";
-      }
-
-      if (pergunta.includes("melhoria 4") || pergunta.includes("nilm")) {
-        return "A melhoria 4 apresenta um pipeline NILM com k-means aprimorado e métricas de qualidade para análise dos dados.";
-      }
-
-      if (pergunta.includes("gráfico") || pergunta.includes("grafico")) {
-        return "O gráfico principal mostrado na página apresenta os resultados visuais da simulação e pode ser expandido com outras figuras do projeto.";
-      }
-
-      if (pergunta.includes("intervalo de confiança") || pergunta.includes("ic")) {
-        return "O intervalo de confiança de 95 por cento foi incluído para fornecer maior rigor estatístico à apresentação dos resultados.";
-      }
-
-      if (pergunta.includes("modelo analítico") || pergunta.includes("modelo analitico")) {
-        return "O modelo analítico descreve o comportamento do atraso em função das variáveis do sistema, permitindo interpretação quantitativa dos resultados.";
-      }
-
-      if (pergunta.includes("k-means") || pergunta.includes("cluster")) {
-        return "O k-means foi utilizado para agrupar padrões nos dados, permitindo uma análise mais estruturada no contexto do NILM.";
-      }
-
-      if (pergunta.includes("autor") || pergunta.includes("quem fez")) {
-        return "Este material foi organizado por Eduardo Glicério no contexto do seu projeto de mestrado.";
-      }
-
-      return "Desculpe, ainda não tenho uma resposta pronta para essa pergunta. Tente perguntar sobre objetivo, melhoria 1, melhoria 2, melhoria 3, melhoria 4, gráfico, modelo analítico ou NILM.";
+    function startLightPulse() {
+      clearInterval(lightInterval);
+      lightInterval = setInterval(() => {
+        const opacity = 0.45 + Math.random() * 0.55;
+        const scale = 0.95 + Math.random() * 0.2;
+        light.style.opacity = opacity;
+        light.style.transform = `translateX(-50%) scale(${scale})`;
+      }, 120);
     }
 
-    function responderPergunta() {
-      const campo = document.getElementById("pergunta");
-      const texto = campo.value.trim();
+    function stopLightPulse() {
+      clearInterval(lightInterval);
+      light.style.opacity = '0.55';
+      light.style.transform = 'translateX(-50%) scale(1)';
+    }
 
-      if (texto === "") {
+    function blinkNow() {
+      robot.classList.remove('blink');
+      void robot.offsetWidth;
+      robot.classList.add('blink');
+    }
+
+    function startBlinkLoop() {
+      clearInterval(blinkInterval);
+      blinkInterval = setInterval(() => {
+        blinkNow();
+      }, 2500 + Math.random() * 2500);
+    }
+
+    function stopVoice() {
+      window.speechSynthesis.cancel();
+      speaking = false;
+      stopTalkingAnimation();
+      setStatus('Voz parada.');
+    }
+
+    function getBotReply(text) {
+      const msg = text.toLowerCase().trim();
+
+      if (!msg) {
+        return 'Pode falar. Estou ouvindo você.';
+      }
+
+      if (msg.includes('oi') || msg.includes('olá') || msg.includes('ola')) {
+        return 'Olá. Que bom falar com você. Como posso ajudar?';
+      }
+
+      if (msg.includes('seu nome')) {
+        return 'Eu sou o robô do Engenheiro Preto.';
+      }
+
+      if (msg.includes('quem é você')) {
+        return 'Sou o assistente de voz da sua página.';
+      }
+
+      if (msg.includes('matemática') || msg.includes('matematica')) {
+        return 'Posso ajudar com matemática, física, química e outras dúvidas.';
+      }
+
+      if (msg.includes('física') || msg.includes('fisica')) {
+        return 'Física também é comigo. Pode perguntar.';
+      }
+
+      if (msg.includes('química') || msg.includes('quimica')) {
+        return 'Química eu também posso explicar de forma simples.';
+      }
+
+      if (msg.includes('engenheiro preto')) {
+        return 'Aqui preto tem voz.';
+      }
+
+      if (msg.includes('canal')) {
+        return 'Este espaço é para ensinar, dialogar e dar voz a ideias importantes.';
+      }
+
+      if (msg.includes('obrigado') || msg.includes('valeu')) {
+        return 'Por nada. Estou aqui com você.';
+      }
+
+      if (msg.includes('tchau')) {
+        return 'Até mais. Volte quando quiser.';
+      }
+
+      return 'Entendi sua mensagem. Esta é a versão local do chatbot. Se você quiser, depois podemos ligar esse visual a uma inteligência artificial de verdade por API.';
+    }
+
+    function choosePortugueseVoice() {
+      const voices = speechSynthesis.getVoices();
+      if (!voices.length) return null;
+
+      return (
+        voices.find(v => v.lang.toLowerCase().includes('pt-br')) ||
+        voices.find(v => v.lang.toLowerCase().startsWith('pt')) ||
+        voices[0]
+      );
+    }
+
+    function speak(text) {
+      if (!('speechSynthesis' in window)) {
+        setStatus('Seu navegador não suporta síntese de voz.');
         return;
       }
 
-      const resposta = gerarResposta(texto);
-      falarTexto(resposta);
-    }
-  </script>
+      stopVoice();
 
+      const utterance = new SpeechSynthesisUtterance(text);
+      const voice = choosePortugueseVoice();
+
+      if (voice) {
+        utterance.voice = voice;
+        utterance.lang = voice.lang;
+      } else {
+        utterance.lang = 'pt-BR';
+      }
+
+      utterance.rate = 1;
+      utterance.pitch = 1;
+      utterance.volume = 1;
+
+      utterance.onstart = () => {
+        speaking = true;
+        startTalkingAnimation();
+        setStatus('Falando...');
+      };
+
+      utterance.onend = () => {
+        speaking = false;
+        stopTalkingAnimation();
+        setStatus('Pronto para conversar.');
+      };
+
+      utterance.onerror = () => {
+        speaking = false;
+        stopTalkingAnimation();
+        setStatus('Não consegui reproduzir a voz.');
+      };
+
+      speechSynthesis.speak(utterance);
+    }
+
+    function processUserMessage() {
+      const text = userInput.value.trim();
+      if (!text) {
+        setStatus('Digite alguma coisa ou use o microfone.');
+        return;
+      }
+
+      const reply = getBotReply(text);
+      userInput.value = '';
+      speak(reply);
+    }
+
+    function setupRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      if (!SpeechRecognition) {
+        setStatus('Seu navegador não suporta reconhecimento de voz.');
+        micBtn.disabled = true;
+        micBtn.style.opacity = '0.6';
+        micBtn.style.cursor = 'not-allowed';
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.lang = 'pt-BR';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onstart = () => {
+        setStatus('Ouvindo... fale agora.');
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        userInput.value = transcript;
+        setStatus('Entendi sua fala.');
+        processUserMessage();
+      };
+
+      recognition.onerror = (event) => {
+        setStatus('Erro no microfone: ' + event.error);
+      };
+
+      recognition.onend = () => {
+        if (!speaking) {
+          setStatus('Pronto para conversar.');
+        }
+      };
+    }
+
+    sendBtn.addEventListener('click', processUserMessage);
+
+    userInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        processUserMessage();
+      }
+    });
+
+    micBtn.addEventListener('click', () => {
+      if (recognition) {
+        try {
+          recognition.start();
+        } catch (error) {
+          setStatus('Microfone já está em uso.');
+        }
+      }
+    });
+
+    stopBtn.addEventListener('click', stopVoice);
+
+    window.speechSynthesis.onvoiceschanged = () => {};
+
+    setupRecognition();
+    startBlinkLoop();
+    setStatus('Pronto para conversar.');
+  </script>
 </body>
 </html>
